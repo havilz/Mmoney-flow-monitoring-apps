@@ -17,11 +17,7 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _createDB,
-    );
+    return await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -71,10 +67,30 @@ class DatabaseHelper {
 
   Future _insertDefaultCategories(Database db) async {
     final defaultCategories = [
-      {'name': 'Food', 'icon': 'fastfood', 'color': '0xFFFF5722', 'type': 'EXPENSE'},
-      {'name': 'Transport', 'icon': 'directions_car', 'color': '0xFF2196F3', 'type': 'EXPENSE'},
-      {'name': 'Salary', 'icon': 'attach_money', 'color': '0xFF4CAF50', 'type': 'INCOME'},
-      {'name': 'Shopping', 'icon': 'shopping_bag', 'color': '0xFF9C27B0', 'type': 'EXPENSE'},
+      {
+        'name': 'Food',
+        'icon': 'fastfood',
+        'color': '0xFFFF5722',
+        'type': 'EXPENSE',
+      },
+      {
+        'name': 'Transport',
+        'icon': 'directions_car',
+        'color': '0xFF2196F3',
+        'type': 'EXPENSE',
+      },
+      {
+        'name': 'Salary',
+        'icon': 'attach_money',
+        'color': '0xFF4CAF50',
+        'type': 'INCOME',
+      },
+      {
+        'name': 'Shopping',
+        'icon': 'shopping_bag',
+        'color': '0xFF9C27B0',
+        'type': 'EXPENSE',
+      },
     ];
 
     for (var category in defaultCategories) {

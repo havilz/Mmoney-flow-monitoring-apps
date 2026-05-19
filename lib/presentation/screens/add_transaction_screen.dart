@@ -18,7 +18,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
-  
+
   String _transactionType = 'EXPENSE';
   int? _selectedCategoryId;
   DateTime _selectedDate = DateTime.now();
@@ -72,7 +72,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         categoryId: _selectedCategoryId!,
         date: _selectedDate,
         note: _noteController.text,
-        walletId: 1, 
+        walletId: 1,
       );
 
       if (widget.transaction == null) {
@@ -90,7 +90,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Delete Transaction'),
-          content: const Text('Are you sure you want to delete this transaction?'),
+          content: const Text(
+            'Are you sure you want to delete this transaction?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -98,7 +100,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             ),
             TextButton(
               onPressed: () {
-                context.read<TransactionProvider>().deleteTransaction(widget.transaction!.id!);
+                context.read<TransactionProvider>().deleteTransaction(
+                  widget.transaction!.id!,
+                );
                 Navigator.pop(context); // Close dialog
                 Navigator.pop(context); // Go back to dashboard/history
               },
@@ -126,7 +130,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEdit ? 'Edit Transaction' : 'Add Transaction', style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          isEdit ? 'Edit Transaction' : 'Add Transaction',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         actions: [
           if (isEdit)
@@ -147,12 +154,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 segments: const [
                   ButtonSegment(
                     value: 'EXPENSE',
-                    label: Text('Expense', style: TextStyle(fontWeight: FontWeight.bold)),
+                    label: Text(
+                      'Expense',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     icon: Icon(Icons.remove_circle_outline),
                   ),
                   ButtonSegment(
                     value: 'INCOME',
-                    label: Text('Income', style: TextStyle(fontWeight: FontWeight.bold)),
+                    label: Text(
+                      'Income',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     icon: Icon(Icons.add_circle_outline),
                   ),
                 ],
@@ -160,24 +173,28 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 onSelectionChanged: (Set<String> newSelection) {
                   setState(() {
                     _transactionType = newSelection.first;
-                    _selectedCategoryId = null; 
+                    _selectedCategoryId = null;
                   });
                 },
                 style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.resolveWith<Color?>(
-                    (states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return _transactionType == 'EXPENSE' ? Colors.red : Colors.green;
-                      }
-                      return isDarkMode ? Colors.white10 : Colors.grey[200];
-                    },
-                  ),
-                  foregroundColor: WidgetStateProperty.resolveWith<Color?>(
-                    (states) {
-                      if (states.contains(WidgetState.selected)) return Colors.white;
-                      return isDarkMode ? Colors.white70 : Colors.black54;
-                    },
-                  ),
+                  backgroundColor: WidgetStateProperty.resolveWith<Color?>((
+                    states,
+                  ) {
+                    if (states.contains(WidgetState.selected)) {
+                      return _transactionType == 'EXPENSE'
+                          ? Colors.red
+                          : Colors.green;
+                    }
+                    return isDarkMode ? Colors.white10 : Colors.grey[200];
+                  }),
+                  foregroundColor: WidgetStateProperty.resolveWith<Color?>((
+                    states,
+                  ) {
+                    if (states.contains(WidgetState.selected)) {
+                      return Colors.white;
+                    }
+                    return isDarkMode ? Colors.white70 : Colors.black54;
+                  }),
                 ),
               ),
               const SizedBox(height: 32),
@@ -185,7 +202,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 controller: _amountController,
                 keyboardType: TextInputType.number,
                 style: TextStyle(
-                  fontSize: 28, 
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: isDarkMode ? Colors.white : Colors.black,
                 ),
@@ -198,19 +215,25 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     fontWeight: FontWeight.bold,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   filled: true,
-                  fillColor: isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.grey[50],
+                  fillColor: isDarkMode
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.grey[50],
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter amount';
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter amount';
+                  }
                   if (double.tryParse(value) == null) return 'Invalid number';
                   return null;
                 },
               ),
               const SizedBox(height: 24),
               DropdownButtonFormField<int>(
-                value: _selectedCategoryId,
+                initialValue: _selectedCategoryId,
                 style: TextStyle(
                   color: isDarkMode ? Colors.white : Colors.black,
                   fontSize: 16,
@@ -219,10 +242,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 decoration: InputDecoration(
                   labelText: 'Category',
                   labelStyle: labelStyle,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   prefixIcon: const Icon(Icons.category_rounded),
                   filled: true,
-                  fillColor: isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.grey[50],
+                  fillColor: isDarkMode
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.grey[50],
                 ),
                 items: categories.map((c) {
                   return DropdownMenuItem<int>(
@@ -244,10 +271,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   decoration: InputDecoration(
                     labelText: 'Date',
                     labelStyle: labelStyle,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     prefixIcon: const Icon(Icons.calendar_today_rounded),
                     filled: true,
-                    fillColor: isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.grey[50],
+                    fillColor: isDarkMode
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : Colors.grey[50],
                   ),
                   child: Text(
                     DateFormat('dd MMMM yyyy').format(_selectedDate),
@@ -270,10 +301,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   labelText: 'Note',
                   labelStyle: labelStyle,
                   hintText: 'What is this for?',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   prefixIcon: const Icon(Icons.notes_rounded),
                   filled: true,
-                  fillColor: isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.grey[50],
+                  fillColor: isDarkMode
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.grey[50],
                 ),
                 maxLines: 2,
               ),
@@ -284,12 +319,17 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   backgroundColor: const Color(0xFF6366F1),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 18),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   elevation: 4,
                 ),
                 child: Text(
                   isEdit ? 'Update Transaction' : 'Save Transaction',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],

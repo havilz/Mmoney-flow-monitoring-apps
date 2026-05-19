@@ -33,10 +33,11 @@ class TransactionProvider with ChangeNotifier {
       bool matchDate = true;
       if (_startDate != null && t.date.isBefore(_startDate!)) matchDate = false;
       if (_endDate != null && t.date.isAfter(_endDate!)) matchDate = false;
-      
+
       bool matchCategory = true;
-      if (_filterCategoryId != null && t.categoryId != _filterCategoryId) matchCategory = false;
-      
+      if (_filterCategoryId != null && t.categoryId != _filterCategoryId)
+        matchCategory = false;
+
       return matchDate && matchCategory;
     }).toList();
   }
@@ -97,9 +98,11 @@ class TransactionProvider with ChangeNotifier {
 
     String csvData = const ListToCsvConverter().convert(rows);
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/transactions_${DateTime.now().millisecondsSinceEpoch}.csv');
+    final file = File(
+      '${directory.path}/transactions_${DateTime.now().millisecondsSinceEpoch}.csv',
+    );
     await file.writeAsString(csvData);
-    
+
     return file.path;
   }
 }

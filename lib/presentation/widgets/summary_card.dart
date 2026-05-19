@@ -17,9 +17,12 @@ class SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
+    final currencyFormat = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+    );
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(16),

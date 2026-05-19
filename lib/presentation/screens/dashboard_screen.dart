@@ -13,11 +13,14 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final transactionProvider = context.watch<TransactionProvider>();
-    final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
+    final currencyFormat = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+    );
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+
     final double topPadding = MediaQuery.of(context).padding.top;
-    final double headerHeight = topPadding + 160; 
+    final double headerHeight = topPadding + 160;
 
     return Scaffold(
       drawer: MainDrawer(transactionProvider: transactionProvider),
@@ -48,12 +51,17 @@ class DashboardScreen extends StatelessWidget {
                           Builder(
                             builder: (context) => IconButton(
                               icon: const Icon(Icons.menu, color: Colors.white),
-                              onPressed: () => Scaffold.of(context).openDrawer(),
+                              onPressed: () =>
+                                  Scaffold.of(context).openDrawer(),
                             ),
                           ),
                           const Text(
                             'Money Flow',
-                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(width: 48),
                         ],
@@ -61,12 +69,19 @@ class DashboardScreen extends StatelessWidget {
                       const SizedBox(height: 10),
                       Text(
                         'Total Balance',
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 14),
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontSize: 14,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         currencyFormat.format(transactionProvider.totalBalance),
-                        style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -74,9 +89,9 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
 
-            // 2. Main Content Container (Kontainer "Hitam")
+            // 2. Main Content Container
             Positioned.fill(
-              top: headerHeight, 
+              top: headerHeight,
               child: Container(
                 decoration: BoxDecoration(
                   color: isDarkMode ? const Color(0xFF0F0F0F) : Colors.white,
@@ -120,39 +135,58 @@ class DashboardScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      const Text(
+                      Text(
                         'Recent Transactions',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: isDarkMode ? Colors.white : Colors.black87,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       transactionProvider.isLoading
                           ? const Center(child: CircularProgressIndicator())
                           : transactionProvider.transactions.isEmpty
-                              ? const Padding(
-                                  padding: EdgeInsets.only(top: 40),
-                                  child: Center(child: Text('No transactions yet')),
-                                )
-                              : ListView.separated(
-                                  padding: EdgeInsets.zero,
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: transactionProvider.transactions.length,
-                                  separatorBuilder: (_, __) => const Divider(height: 1),
-                                  itemBuilder: (context, index) {
-                                    final transaction = transactionProvider.transactions[index];
-                                    return TransactionListTile(
-                                      transaction: transaction,
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => AddTransactionScreen(transaction: transaction),
-                                          ),
-                                        );
-                                      },
+                          ? Padding(
+                              padding: const EdgeInsets.only(top: 40),
+                              child: Center(
+                                child: Text(
+                                  'No transactions yet',
+                                  style: TextStyle(
+                                    color: isDarkMode
+                                        ? Colors.white70
+                                        : Colors.black54,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : ListView.separated(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount:
+                                  transactionProvider.transactions.length,
+                              separatorBuilder: (_, __) =>
+                                  const Divider(height: 1),
+                              itemBuilder: (context, index) {
+                                final transaction =
+                                    transactionProvider.transactions[index];
+                                return TransactionListTile(
+                                  transaction: transaction,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AddTransactionScreen(
+                                              transaction: transaction,
+                                            ),
+                                      ),
                                     );
                                   },
-                                ),
+                                );
+                              },
+                            ),
                     ],
                   ),
                 ),
@@ -165,7 +199,9 @@ class DashboardScreen extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AddTransactionScreen()),
+            MaterialPageRoute(
+              builder: (context) => const AddTransactionScreen(),
+            ),
           );
         },
         label: const Text('Add Transaction'),

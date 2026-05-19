@@ -10,13 +10,7 @@ class CategoryModel extends CategoryEntity {
   });
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'icon': icon,
-      'color': color,
-      'type': type,
-    };
+    return {'id': id, 'name': name, 'icon': icon, 'color': color, 'type': type};
   }
 
   factory CategoryModel.fromMap(Map<String, dynamic> map) {

@@ -11,9 +11,9 @@ import 'presentation/screens/dashboard_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   final dbHelper = DatabaseHelper.instance;
-  
+
   // Repositories
   final transactionRepo = TransactionRepositoryImpl(dbHelper);
   final categoryRepo = CategoryRepositoryImpl(dbHelper);
@@ -21,8 +21,13 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => TransactionProvider(transactionRepo)..loadTransactions()),
-        ChangeNotifierProvider(create: (_) => CategoryProvider(categoryRepo)..loadCategories()),
+        ChangeNotifierProvider(
+          create: (_) =>
+              TransactionProvider(transactionRepo)..loadTransactions(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CategoryProvider(categoryRepo)..loadCategories(),
+        ),
       ],
       child: const MyApp(),
     ),

@@ -6,15 +6,14 @@ class TransactionListTile extends StatelessWidget {
   final TransactionEntity transaction;
   final VoidCallback? onTap;
 
-  const TransactionListTile({
-    super.key,
-    required this.transaction,
-    this.onTap,
-  });
+  const TransactionListTile({super.key, required this.transaction, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
+    final currencyFormat = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+    );
     final isIncome = transaction.type == 'INCOME';
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
@@ -24,8 +23,8 @@ class TransactionListTile extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isIncome 
-              ? Colors.green.withValues(alpha: 0.1) 
+          color: isIncome
+              ? Colors.green.withValues(alpha: 0.1)
               : Colors.red.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),

@@ -13,7 +13,10 @@ class CategoryManagementScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage Categories', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Manage Categories',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: ListView.separated(
         itemCount: categoryProvider.categories.length,
@@ -27,7 +30,10 @@ class CategoryManagementScreen extends StatelessWidget {
                 color: Color(int.parse(category.color)).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.category_rounded, color: Color(int.parse(category.color))),
+              child: Icon(
+                Icons.category_rounded,
+                color: Color(int.parse(category.color)),
+              ),
             ),
             title: Text(
               category.name,
@@ -44,7 +50,8 @@ class CategoryManagementScreen extends StatelessWidget {
             ),
             trailing: IconButton(
               icon: const Icon(Icons.edit_rounded),
-              onPressed: () => _showAddCategoryDialog(context, category: category),
+              onPressed: () =>
+                  _showAddCategoryDialog(context, category: category),
             ),
           );
         },
@@ -59,7 +66,10 @@ class CategoryManagementScreen extends StatelessWidget {
     );
   }
 
-  void _showAddCategoryDialog(BuildContext context, {CategoryEntity? category}) {
+  void _showAddCategoryDialog(
+    BuildContext context, {
+    CategoryEntity? category,
+  }) {
     final nameController = TextEditingController(text: category?.name);
     String type = category?.type ?? 'EXPENSE';
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -76,8 +86,13 @@ class CategoryManagementScreen extends StatelessWidget {
             );
 
             return AlertDialog(
-              title: Text(isEdit ? 'Edit Category' : 'New Category', style: const TextStyle(fontWeight: FontWeight.bold)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: Text(
+                isEdit ? 'Edit Category' : 'New Category',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -90,14 +105,18 @@ class CategoryManagementScreen extends StatelessWidget {
                     decoration: InputDecoration(
                       labelText: 'Category Name',
                       labelStyle: labelStyle,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       filled: true,
-                      fillColor: isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.grey[50],
+                      fillColor: isDarkMode
+                          ? Colors.white.withValues(alpha: 0.05)
+                          : Colors.grey[50],
                     ),
                   ),
                   const SizedBox(height: 20),
                   DropdownButtonFormField<String>(
-                    value: type,
+                    initialValue: type,
                     isExpanded: true,
                     style: TextStyle(
                       color: isDarkMode ? Colors.white : Colors.black,
@@ -106,12 +125,19 @@ class CategoryManagementScreen extends StatelessWidget {
                     decoration: InputDecoration(
                       labelText: 'Type',
                       labelStyle: labelStyle,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       filled: true,
-                      fillColor: isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.grey[50],
+                      fillColor: isDarkMode
+                          ? Colors.white.withValues(alpha: 0.05)
+                          : Colors.grey[50],
                     ),
                     items: const [
-                      DropdownMenuItem(value: 'EXPENSE', child: Text('Expense')),
+                      DropdownMenuItem(
+                        value: 'EXPENSE',
+                        child: Text('Expense'),
+                      ),
                       DropdownMenuItem(value: 'INCOME', child: Text('Income')),
                     ],
                     onChanged: (val) => setState(() => type = val!),
@@ -122,14 +148,22 @@ class CategoryManagementScreen extends StatelessWidget {
                 if (isEdit)
                   TextButton(
                     onPressed: () {
-                      _showDeleteConfirmation(context, category!);
+                      _showDeleteConfirmation(context, category);
                     },
-                    child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                    child: const Text(
+                      'Delete',
+                      style: TextStyle(color: Colors.red),
+                    ),
                   ),
                 const Spacer(),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('Cancel', style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54)),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.white70 : Colors.black54,
+                    ),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -141,11 +175,15 @@ class CategoryManagementScreen extends StatelessWidget {
                         color: type == 'EXPENSE' ? '0xFFEF4444' : '0xFF10B981',
                         type: type,
                       );
-                      
+
                       if (isEdit) {
-                        context.read<CategoryProvider>().updateCategory(updatedCategory);
+                        context.read<CategoryProvider>().updateCategory(
+                          updatedCategory,
+                        );
                       } else {
-                        context.read<CategoryProvider>().addCategory(updatedCategory);
+                        context.read<CategoryProvider>().addCategory(
+                          updatedCategory,
+                        );
                       }
                       Navigator.pop(context);
                     }
@@ -153,7 +191,9 @@ class CategoryManagementScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6366F1),
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: Text(isEdit ? 'Update' : 'Add'),
                 ),
@@ -170,7 +210,9 @@ class CategoryManagementScreen extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Category'),
-        content: Text('Are you sure you want to delete "${category.name}"? Transactions using this category might be affected.'),
+        content: Text(
+          'Are you sure you want to delete "${category.name}"? Transactions using this category might be affected.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

@@ -18,10 +18,7 @@ class WalletRepositoryImpl implements WalletRepository {
   @override
   Future<int> insertWallet(WalletEntity wallet) async {
     final db = await dbHelper.database;
-    final model = WalletModel(
-      name: wallet.name,
-      balance: wallet.balance,
-    );
+    final model = WalletModel(name: wallet.name, balance: wallet.balance);
     return await db.insert('wallets', model.toMap());
   }
 
@@ -44,10 +41,6 @@ class WalletRepositoryImpl implements WalletRepository {
   @override
   Future<int> deleteWallet(int id) async {
     final db = await dbHelper.database;
-    return await db.delete(
-      'wallets',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return await db.delete('wallets', where: 'id = ?', whereArgs: [id]);
   }
 }

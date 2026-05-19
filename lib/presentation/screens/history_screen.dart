@@ -9,7 +9,8 @@ class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
 
   @override
-  State<TransactionHistoryScreen> createState() => _TransactionHistoryScreenState();
+  State<TransactionHistoryScreen> createState() =>
+      _TransactionHistoryScreenState();
 }
 
 class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
@@ -56,8 +57,12 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                       label: Text(c.name),
                       selected: _selectedCategoryId == c.id,
                       onSelected: (selected) {
-                        setState(() => _selectedCategoryId = selected ? c.id : null);
-                        transactionProvider.setFilters(categoryId: _selectedCategoryId);
+                        setState(
+                          () => _selectedCategoryId = selected ? c.id : null,
+                        );
+                        transactionProvider.setFilters(
+                          categoryId: _selectedCategoryId,
+                        );
                       },
                     ),
                   );
@@ -65,10 +70,12 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               ],
             ),
           ),
-          
+
           Expanded(
             child: transactionProvider.filteredTransactions.isEmpty
-                ? const Center(child: Text('No transactions match your filters'))
+                ? const Center(
+                    child: Text('No transactions match your filters'),
+                  )
                 : ListView.builder(
                     itemCount: transactionProvider.filteredTransactions.length,
                     itemBuilder: (context, index) {
@@ -79,7 +86,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AddTransactionScreen(transaction: t),
+                              builder: (context) =>
+                                  AddTransactionScreen(transaction: t),
                             ),
                           );
                         },
@@ -92,7 +100,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     );
   }
 
-  void _showFilterSheet(BuildContext context, CategoryProvider cp, TransactionProvider tp) {
+  void _showFilterSheet(
+    BuildContext context,
+    CategoryProvider cp,
+    TransactionProvider tp,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
