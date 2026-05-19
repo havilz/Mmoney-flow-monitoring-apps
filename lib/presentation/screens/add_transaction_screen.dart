@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../domain/entities/transaction_entity.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
+import '../providers/wallet_provider.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   final TransactionEntity? transaction;
@@ -22,6 +23,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   String _transactionType = 'EXPENSE';
   int? _selectedCategoryId;
   DateTime _selectedDate = DateTime.now();
+  int? _selectedWalletId;
 
   @override
   void initState() {
@@ -32,6 +34,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       _transactionType = widget.transaction!.type;
       _selectedCategoryId = widget.transaction!.categoryId;
       _selectedDate = widget.transaction!.date;
+      _selectedWalletId = widget.transaction!.walletId;
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final walletProvider = context.read<WalletProvider>();
+        setState(() {
+          _selectedWalletId = walletProvider.selectedWalletId;
+        });
+      });
     }
   }
 
@@ -64,6 +74,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         );
         return;
       }
+      if (_selectedWalletId == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Please select a wallet')));
+        return;
+      }
 
       final transaction = TransactionEntity(
         id: widget.transaction?.id,
@@ -72,13 +88,22 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         categoryId: _selectedCategoryId!,
         date: _selectedDate,
         note: _noteController.text,
-        walletId: 1,
+        walletId: _selectedWalletId!,
       );
 
+      final walletProvider = context.read<WalletProvider>();
       if (widget.transaction == null) {
-        context.read<TransactionProvider>().addTransaction(transaction);
+        context.read<TransactionProvider>().addTransaction(transaction).then((
+          _,
+        ) {
+          walletProvider.loadWallets();
+        });
       } else {
-        context.read<TransactionProvider>().updateTransaction(transaction);
+        context.read<TransactionProvider>().updateTransaction(transaction).then(
+          (_) {
+            walletProvider.loadWallets();
+          },
+        );
       }
       Navigator.pop(context);
     }
@@ -100,9 +125,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             ),
             TextButton(
               onPressed: () {
-                context.read<TransactionProvider>().deleteTransaction(
-                  widget.transaction!.id!,
-                );
+                final walletProvider = context.read<WalletProvider>();
+                context
+                    .read<TransactionProvider>()
+                    .deleteTransaction(widget.transaction!.id!)
+                    .then((_) {
+                      walletProvider.loadWallets();
+                    });
                 Navigator.pop(context); // Close dialog
                 Navigator.pop(context); // Go back to dashboard/history
               },
@@ -117,6 +146,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     final categoryProvider = context.watch<CategoryProvider>();
+    final walletProvider = context.watch<WalletProvider>();
     final categories = categoryProvider.categories
         .where((c) => c.type == _transactionType || c.type == 'BOTH')
         .toList();
@@ -233,7 +263,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ),
               const SizedBox(height: 24),
               DropdownButtonFormField<int>(
-                initialValue: _selectedCategoryId,
+                value: _selectedCategoryId,
                 style: TextStyle(
                   color: isDarkMode ? Colors.white : Colors.black,
                   fontSize: 16,
@@ -262,6 +292,40 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     _selectedCategoryId = value;
                   });
                 },
+              ),
+              const SizedBox(height: 24),
+              DropdownButtonFormField<int>(
+                value: _selectedWalletId,
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Wallet / Account',
+                  labelStyle: labelStyle,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  prefixIcon: const Icon(Icons.account_balance_wallet_rounded),
+                  filled: true,
+                  fillColor: isDarkMode
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.grey[50],
+                ),
+                items: walletProvider.wallets.map((w) {
+                  return DropdownMenuItem<int>(
+                    value: w.id,
+                    child: Text(w.name),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedWalletId = value;
+                  });
+                },
+                validator: (value) =>
+                    value == null ? 'Please select a wallet' : null,
               ),
               const SizedBox(height: 24),
               InkWell(

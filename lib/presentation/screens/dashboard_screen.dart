@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/transaction_provider.dart';
+import '../providers/wallet_provider.dart';
 import '../widgets/summary_card.dart';
 import '../widgets/transaction_list_tile.dart';
 import '../widgets/main_drawer.dart';
@@ -13,6 +14,15 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final transactionProvider = context.watch<TransactionProvider>();
+    final walletProvider = context.watch<WalletProvider>();
+
+    final selectedWalletId = walletProvider.selectedWalletId;
+    if (transactionProvider.selectedWalletId != selectedWalletId) {
+      Future.microtask(() {
+        transactionProvider.setSelectedWalletId(selectedWalletId);
+      });
+    }
+
     final currencyFormat = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp ',
@@ -68,15 +78,18 @@ class DashboardScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Total Balance',
+                        'Total Balance (${walletProvider.selectedWallet?.name ?? "Cash"})',
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.9),
                           fontSize: 14,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        currencyFormat.format(transactionProvider.totalBalance),
+                        currencyFormat.format(
+                          walletProvider.selectedWallet?.balance ?? 0.0,
+                        ),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 36,
@@ -171,19 +184,22 @@ class DashboardScreen extends StatelessWidget {
                               itemBuilder: (context, index) {
                                 final transaction =
                                     transactionProvider.transactions[index];
-                                return TransactionListTile(
-                                  transaction: transaction,
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            AddTransactionScreen(
-                                              transaction: transaction,
-                                            ),
-                                      ),
-                                    );
-                                  },
+                                return AnimatedListTile(
+                                  index: index,
+                                  child: TransactionListTile(
+                                    transaction: transaction,
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              AddTransactionScreen(
+                                                transaction: transaction,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 );
                               },
                             ),
@@ -209,6 +225,58 @@ class DashboardScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF6366F1),
         foregroundColor: Colors.white,
       ),
+    );
+  }
+}
+
+class AnimatedListTile extends StatefulWidget {
+  final Widget child;
+  final int index;
+
+  const AnimatedListTile({super.key, required this.child, required this.index});
+
+  @override
+  State<AnimatedListTile> createState() => _AnimatedListTileState();
+}
+
+class _AnimatedListTileState extends State<AnimatedListTile>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 350 + (widget.index * 60).clamp(0, 300)),
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 0.25),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: SlideTransition(position: _slideAnimation, child: widget.child),
     );
   }
 }

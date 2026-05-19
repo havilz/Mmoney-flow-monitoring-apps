@@ -1,30 +1,41 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:provider/provider.dart';
 import 'package:money_monitoring_app/main.dart';
+import 'package:money_monitoring_app/presentation/providers/transaction_provider.dart';
+import 'package:money_monitoring_app/presentation/providers/category_provider.dart';
+import 'package:money_monitoring_app/presentation/providers/wallet_provider.dart';
+import 'provider_unit_test.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('App starts and displays splash screen title', (
+    WidgetTester tester,
+  ) async {
+    final mockTxRepo = MockTransactionRepository();
+    final mockCategoryRepo = MockCategoryRepository();
+    final mockWalletRepo = MockWalletRepository();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => TransactionProvider(mockTxRepo)..loadTransactions(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => CategoryProvider(mockCategoryRepo)..loadCategories(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => WalletProvider(mockWalletRepo)..loadWallets(),
+          ),
+        ],
+        child: const MyApp(),
+      ),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Verify that SplashScreen builds and displays the app name
+    expect(find.text('Money Flow'), findsOneWidget);
+    expect(find.text('Personal Finance Monitor'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Settle the splash timer and transition
+    await tester.pumpAndSettle(const Duration(milliseconds: 3500));
   });
 }

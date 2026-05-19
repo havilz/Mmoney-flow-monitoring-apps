@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../providers/transaction_provider.dart';
 import '../screens/history_screen.dart';
 import '../screens/category_management_screen.dart';
+import '../screens/wallet_management_screen.dart';
 
 class MainDrawer extends StatelessWidget {
   final TransactionProvider transactionProvider;
@@ -62,6 +63,19 @@ class MainDrawer extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => const CategoryManagementScreen(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.account_balance_wallet_outlined),
+            title: const Text('Manage Wallets'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const WalletManagementScreen(),
                 ),
               );
             },

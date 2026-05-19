@@ -11,7 +11,16 @@ class WalletRepositoryImpl implements WalletRepository {
   @override
   Future<List<WalletEntity>> getAllWallets() async {
     final db = await dbHelper.database;
-    final List<Map<String, dynamic>> maps = await db.query('wallets');
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+      SELECT 
+        w.id, 
+        w.name, 
+        (w.balance + 
+         COALESCE((SELECT SUM(amount) FROM transactions WHERE wallet_id = w.id AND type = 'INCOME'), 0) - 
+         COALESCE((SELECT SUM(amount) FROM transactions WHERE wallet_id = w.id AND type = 'EXPENSE'), 0)
+        ) AS balance
+      FROM wallets w
+    ''');
     return List.generate(maps.length, (i) => WalletModel.fromMap(maps[i]));
   }
 

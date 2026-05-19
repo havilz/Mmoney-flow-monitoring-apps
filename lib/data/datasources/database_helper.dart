@@ -17,7 +17,26 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(
+      path,
+      version: 2,
+      onConfigure: _configureDB,
+      onCreate: _createDB,
+      onUpgrade: _upgradeDB,
+    );
+  }
+
+  Future _configureDB(Database db) async {
+    await db.execute('PRAGMA foreign_keys = ON');
+  }
+
+  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      final List<Map<String, dynamic>> wallets = await db.query('wallets');
+      if (wallets.isEmpty) {
+        await db.insert('wallets', {'id': 1, 'name': 'Cash', 'balance': 0.0});
+      }
+    }
   }
 
   Future _createDB(Database db, int version) async {
@@ -34,6 +53,9 @@ class DatabaseHelper {
         balance $realType
       )
     ''');
+
+    // Seed default wallet
+    await db.insert('wallets', {'id': 1, 'name': 'Cash', 'balance': 0.0});
 
     // Categories Table
     await db.execute('''

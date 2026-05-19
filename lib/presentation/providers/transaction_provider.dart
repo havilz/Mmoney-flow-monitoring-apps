@@ -15,10 +15,24 @@ class TransactionProvider with ChangeNotifier {
   DateTime? _startDate;
   DateTime? _endDate;
   int? _filterCategoryId;
+  int? _selectedWalletId;
 
   TransactionProvider(this.repository);
 
-  List<TransactionEntity> get transactions => _transactions;
+  int? get selectedWalletId => _selectedWalletId;
+
+  void setSelectedWalletId(int? walletId) {
+    if (_selectedWalletId != walletId) {
+      _selectedWalletId = walletId;
+      notifyListeners();
+    }
+  }
+
+  List<TransactionEntity> get transactions {
+    if (_selectedWalletId == null) return _transactions;
+    return _transactions.where((t) => t.walletId == _selectedWalletId).toList();
+  }
+
   bool get isLoading => _isLoading;
 
   void setFilters({DateTime? start, DateTime? end, int? categoryId}) {
@@ -29,7 +43,7 @@ class TransactionProvider with ChangeNotifier {
   }
 
   List<TransactionEntity> get filteredTransactions {
-    return _transactions.where((t) {
+    return transactions.where((t) {
       bool matchDate = true;
       if (_startDate != null && t.date.isBefore(_startDate!)) matchDate = false;
       if (_endDate != null && t.date.isAfter(_endDate!)) matchDate = false;
